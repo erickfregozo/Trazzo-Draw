@@ -1,0 +1,53 @@
+* {
+    margin: 0;
+    color: var(--color-white) !important;
+    touch-action: none;
+    background: transparent;
+}
+html {
+  scrollbar-width: auto;
+  scrollbar-color: #555 #2e2e2e;
+}
+html::-webkit-scrollbar {
+  width: 16px;
+}
+body {
+    overflow: hidden;
+}
+nav {
+    background-color: var(--color-secondary);
+    width: 100dvw;
+    button {
+        border: none;
+    }
+}
+button {
+    border: var(--color-border) 1px solid;
+    border-radius: 5px;
+    padding: 5px;
+    background-color: var(--color-secondary);
+    &:hover {
+        background-color: var(--color-button-hover);
+    }
+    &.active {
+        background-color: var(--color-button-active);
+    }
+}
+input[type="text"],input[type="number"] {
+    border: var(--color-border) 1px solid;
+    border-radius: 5px;
+    padding: 5px;
+    background-color: var(--color-button-secondary);
+    &:hover {
+        background-color: var(--color-button-hover);
+    }
+    &.active {
+        background-color: var(--color-button-active);
+    }
+}
+
+input[type="range"] {
+  background: transparent;
+  accent-color: white;
+  height: 30px;
+}

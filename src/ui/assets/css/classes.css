@@ -1,0 +1,161 @@
+#app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    background-color: #1f1f1f;
+    color: var(--color-white);
+}
+
+#app-container {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    width: 100%;
+}
+
+#drawing-canvas {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+#splash {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.lucide {
+    aspect-ratio: 1/1;
+}
+
+.wrapper {
+    all: unset;
+    display: block;
+}
+
+.container-bg-border {
+    border: 1px solid var(--color-border);
+    background-color: var(--color-bg);
+}
+
+.canvas-area {
+    width: 100% !important;
+    height: 100% !important;
+    position: relative;
+}
+
+.toolbox {
+    background-color: var(--color-secondary);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.toolbar {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 15vw;
+
+    .color-picker {
+        aspect-ratio: 1/1;
+        width: 100%;
+        height: 230px;
+    }
+
+    .toolbar-options {
+        background-color: var(--color-secondary);
+        width: 100%;
+
+        button {
+            height: 25px;
+
+            .lucide {
+                height: 15px;
+            }
+        }
+    }
+}
+
+.flex-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-number {
+    width: 70px;
+}
+
+.input-range {
+    width: calc(100% - 70px);
+}
+
+.tool-options-grid {
+    flex: 1;
+    min-height: 0;
+    overflow: scroll;
+
+    border: 1px solid var(--color-border);
+    background-color: var(--color-bg);
+}
+
+.size-grid {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    align-content: flex-start;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    overflow: scroll;
+
+    border: 1px solid var(--color-border);
+    background-color: var(--color-bg);
+}
+
+.size-button {
+    aspect-ratio: 1;
+    border-radius: 0px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.size-panel {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    align-content: flex-start;
+    overflow: scroll;
+
+    border: 1px solid var(--color-border);
+    background-color: var(--color-bg);
+}
+
+#layerItem.active {
+    background-color: var(--color-secondary) !important;
+}
+
+.vc-chrome-picker {
+    .body {
+        background-color: var(--color-bg) !important;
+        box-shadow: none !important;
+    }
+}
+
+.vc-swatches-picker {
+    background-color: var(--color-bg) !important;
+}
+
+.btn-color-1 {
+    z-index: 2;
+}
+
+.btn-color-2 {
+    z-index: 1;
+}

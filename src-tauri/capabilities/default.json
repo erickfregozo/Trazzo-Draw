@@ -1,0 +1,35 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Capability for the main window",
+  "windows": [
+    "main",
+    "splashscreen"
+  ],
+  "permissions": [
+    "core:default",
+    "opener:default",
+    "core:window:allow-create",
+    "core:window:allow-get-all-windows",
+    "core:window:allow-show",
+    "core:window:allow-close",
+    "core:window:allow-set-title",
+    "core:window:allow-set-size",
+    "core:window:allow-set-decorations",
+    "core:window:allow-set-position",
+    "core:window:allow-set-focus",
+    "core:window:allow-set-resizable",
+    "core:window:allow-maximize",
+    "core:window:allow-center",
+    "dialog:allow-open",
+    "dialog:allow-save",
+    "dialog:allow-message",
+    "dialog:allow-confirm",
+    "fs:read-all",
+    "fs:write-all",
+    "fs:allow-remove",
+    "fs:allow-mkdir",
+    "fs:default",
+    "dialog:default"
+  ]
+}
