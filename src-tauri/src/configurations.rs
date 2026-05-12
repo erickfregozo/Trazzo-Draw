@@ -33,7 +33,7 @@ pub async fn read_config<R: Runtime>(app: AppHandle<R>, config: String) -> Resul
         .app_config_dir()
         .map_err(|e| format!("Failed to get app config directory: {}", e))?;
 
-    let config_file_path = app_config_dir.join("config").join(config + ".ini");
+    let config_file_path = app_config_dir.join("config").join(config + ".json");
     let config_file_content = fs::read_to_string(&config_file_path)
         .map_err(|e| format!("Failed to read config file: {}", e))?;
 
@@ -51,7 +51,9 @@ pub fn list_configurations<R: Runtime>(_app: AppHandle<R>) -> Result<Vec<String>
     let mut configurations = Vec::new();
 
     if config_dir.exists() {
-        for entry in fs::read_dir(config_dir).map_err(|e| format!("Failed to read config directory: {}", e))? {
+        for entry in fs::read_dir(config_dir)
+            .map_err(|e| format!("Failed to read config directory: {}", e))?
+        {
             let entry = entry.map_err(|e| format!("Failed to read directory entry: {}", e))?;
             let path = entry.path();
             if path.is_file() {
@@ -71,7 +73,9 @@ pub fn list_configurations<R: Runtime>(_app: AppHandle<R>) -> Result<Vec<String>
 
 // --- Funciones auxiliares (se mantienen igual) ---
 fn copy_missing_files(source: &Path, destination: &Path) -> Result<(), String> {
-    for entry in fs::read_dir(source).map_err(|e| format!("Failed to read source directory: {}", e))? {
+    for entry in
+        fs::read_dir(source).map_err(|e| format!("Failed to read source directory: {}", e))?
+    {
         let entry = entry.map_err(|e| format!("Failed to read directory entry: {}", e))?;
         let source_path = entry.path();
         let file_name = entry.file_name();
@@ -84,14 +88,62 @@ fn copy_missing_files(source: &Path, destination: &Path) -> Result<(), String> {
             copy_missing_files(&source_path, &dest_path)?;
         } else if source_path.is_file() {
             let file_name_str = file_name.to_string_lossy();
-            if !is_in_specific_folder(&source_path) || !file_already_exists_in_subfolder(&destination, &file_name_str) {
+            if !is_in_specific_folder(&source_path)
+                || !file_already_exists_in_subfolder(&destination, &file_name_str)
+            {
                 if !dest_path.exists() {
-                    let _ = fs::copy(&source_path, &dest_path);
+                    let content: String;
+                    let mut final_path = dest_path;
+                    // if file is .ini, is a configuration file from config folder, parse it to json
+                    // if not it is another type of file, copy it as is
+                    if file_name_str.ends_with(".ini") {
+                        println!("INI file found: {}", file_name_str);
+                        content = parse_ini_to_json(
+                            fs::read_to_string(&source_path)
+                                .map_err(|e| format!("Failed to read source file: {}", e))?,
+                        );
+                        final_path = final_path.with_extension("json");
+                    } else {
+                        println!("Other file found: {}", file_name_str);
+                        content = fs::read_to_string(&source_path)
+                            .map_err(|e| format!("Failed to read source file: {}", e))?;
+                    }
+                    let _ = fs::write(&final_path, content);
                 }
             }
         }
     }
     Ok(())
+}
+fn parse_ini_to_json(content: String) -> String {
+    let mut json = String::new();
+    let mut is_first_section = true;
+
+    json.push_str("{\n");
+
+    for line in content.lines() {
+        let line = line.trim();
+        if line.is_empty() {
+            continue;
+        }
+
+        if line.starts_with('[') && line.ends_with(']') {
+            let section = line[1..line.len() - 1].trim();
+            if !is_first_section {
+                json.push_str("\t},\n");
+            }
+            is_first_section = false;
+
+            json.push_str(&format!("\t\"{}\": {{ \n", section));
+        } else {
+            let propiety_split = line.split('=').collect::<Vec<&str>>();
+            let propiety = propiety_split[0].to_string();
+            let value = propiety_split[1].to_string();
+            json.push_str(&format!("\t\t\"{propiety}\": \"{value}\", \n"));
+        }
+    }
+    json.push_str("\t}\n}");
+    format!("{}", json)
 }
 
 fn is_in_specific_folder(source_path: &Path) -> bool {
@@ -112,4 +164,3 @@ fn file_already_exists_in_subfolder(destination: &Path, file_name: &str) -> bool
     }
     false
 }
-
