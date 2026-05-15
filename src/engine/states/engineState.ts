@@ -2,14 +2,11 @@ import { Panel } from "@/engine/classes/panel";
 
 export class EngineState {
   activePanel: Panel | null = null;
+  cameraWidth: number = 0;
+  cameraHeight: number = 0;
 
-  zoom: number = 1;
-  rotation: number = 0;
-  
-  setZoom(zoom:number) {
-    this.zoom = zoom;
-  }
-  setRotation(rotation:number) {
-    this.rotation = rotation;
+  updateCameraSize(width: number, height: number) {
+    this.cameraWidth = width;
+    this.cameraHeight = height;
   }
 }

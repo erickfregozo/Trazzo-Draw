@@ -7,9 +7,9 @@ export class ConfigManager {
   async init() {
     await invoke("init_config");
   }
-  async getConfig(name: string) {
+  async getConfig(name: string): Promise<string> {
     const iniConfig = await invoke("read_config", { config: name });
-    return iniConfig
+    return iniConfig as string;
   }
   async getSectionConfig(name: string, seccion: string) {}
 }

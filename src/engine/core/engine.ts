@@ -24,11 +24,9 @@ export class Engine {
   private layerManager = new LayerManager(this.state);
   private renderSystem = new RenderSystem(this.state);
   private toolSystem = new ToolSystem(this.tool);
-  private systems: LoopSystem[] = [];
+  private systemsLoop: LoopSystem[] = [];
 
   public static getInstance(): Engine {
-    // globalThis is not reinitialized during module reloads (HMR),
-    // so the Engine instance persists across updates.
     const g = globalThis as any;
 
     if (!g.__ENGINE__) {
@@ -40,11 +38,18 @@ export class Engine {
   public async init() {
     this.loading = true;
     await this.configManager.init();
+    let HotkeyConsumer: any[] = [
+      this.panelManager,
+      this.layerManager,
+      this.toolSystem,
+      this.inputManager,
+      this.tool
+    ];
+    this.hotkeySystem.init(this.state, HotkeyConsumer);
 
-    this.hotkeySystem.init(this.state, [this.layerManager, this.toolSystem]);
-    this.systems.push(this.hotkeySystem);
-    this.systems.push(this.toolSystem);
-    this.systems.push(this.renderSystem);
+    this.systemsLoop.push(this.hotkeySystem);
+    this.systemsLoop.push(this.toolSystem);
+    this.systemsLoop.push(this.renderSystem);
 
     this.loading = false;
   }
@@ -83,18 +88,18 @@ export class Engine {
   };
 
   private update(dt: number) {
-    this.systems.forEach((script) =>
+    this.systemsLoop.forEach((script) =>
       script.begin?.(dt, this.state, this.inputManager),
     );
-    this.systems.forEach((script) =>
+    this.systemsLoop.forEach((script) =>
       script.update?.(dt, this.state, this.inputManager),
     );
-    this.systems.forEach((script) =>
+    this.systemsLoop.forEach((script) =>
       script.lateUpdate?.(dt, this.state, this.inputManager),
     );
   }
   private render() {
-    this.systems.forEach((script) => script.render?.(this.state));
-    this.systems.forEach((script) => script.end?.(this.state));
+    this.systemsLoop.forEach((script) => script.render?.(this.state));
+    this.systemsLoop.forEach((script) => script.end?.(this.state));
   }
 }

@@ -7,6 +7,7 @@ export class Layer {
   visible: boolean = true;
   blendMode: BlendMode = BlendMode.Normal;
   opacity: number = 1;
+  locked: boolean = false;
 
   parent: Layer | null = null;
   childrens: Layer[] = [];
