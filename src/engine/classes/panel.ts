@@ -1,9 +1,11 @@
 import { Layer } from "./layer";
+import { Transform } from "./transform";
 
 export class Panel {
   name: string;
   height: number;
   width: number;
+  transform: Transform;
   DPI: number; // Pixel density (DPI: pixels per inch)
   location: string = "";
   selectedLayer: Layer | null = null;
@@ -19,7 +21,8 @@ export class Panel {
     this.height = height;
     this.width = width;
     this.DPI = dpi;
-
+    this.transform = new Transform();
+    this.transform.onChange = () => { this.dirty = true; };
     // canvas
     this.canvas = document.createElement("canvas");
     this.context = this.canvas.getContext("2d")!;
