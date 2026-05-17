@@ -59,10 +59,12 @@ export class InputManager {
     this.keyUpCallbacks.push(fn);
   }
   onKeyDown = (e: KeyboardEvent) => {
+    if (e.repeat) return;
     this.keys.add(getKeyCode(e.key));
     this.keyDownCallbacks.forEach(fn => fn(this.keys, e));
   };
   onKeyUp = (e: KeyboardEvent) => {
+    if (e.repeat) return;
     this.keys.delete(getKeyCode(e.key));
     this.keyUpCallbacks.forEach(fn => fn(this.keys, e));
   };

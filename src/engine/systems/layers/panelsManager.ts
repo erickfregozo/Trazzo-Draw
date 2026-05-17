@@ -6,7 +6,7 @@ import { Panel } from "@/engine/classes/panel";
 
 export class PanelsManager {
   private state: EngineState;
-  name: string="";
+  name: string = "";
   panels: Panel[] = [];
 
   constructor(state: EngineState) {
@@ -14,12 +14,15 @@ export class PanelsManager {
   }
   async init(width: number, height: number) {
     let newPanel = new Panel("New panel", width, height, 300);
-    const paper = new Layer("paper", width, height);
+    const layer1 = new Layer("New layer", width, height);
+    const paper = new Layer("Paper", width, height);
     // Pintar el canvas del layer de blanco
     paper.context.fillStyle = "#ffffff";
     paper.context.fillRect(0, 0, paper.canvas.width, paper.canvas.height);
+    paper.locked = true;
     newPanel.layers.push(paper);
-    newPanel.selectedLayer = paper;
+    newPanel.layers.push(layer1);
+    newPanel.selectedLayer = layer1;
 
     this.addPanel(newPanel);
     this.setActivePanel(newPanel)

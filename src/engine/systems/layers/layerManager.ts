@@ -75,7 +75,9 @@ export class LayerManager {
     this.panel!.selectedLayer = layer;
     return layer;
   }
-  removeLayer(layer: Layer) {
+  removeLayer(layer: Layer | null) {
+    if (!layer || layer.locked) return;
+
     const parent = layer.parent;
     if (parent) {
       const index = parent.childrens.indexOf(layer);
@@ -94,6 +96,12 @@ export class LayerManager {
   }
   toggleLayer(layer: Layer) {
     layer.visible = !layer.visible;
+    this.panel!.dirty = true;
+  }
+  clearLayer() {
+    const layer = this.selectedLayer;
+    if (!layer || layer.locked) return;
+    layer.context.clearRect(0, 0, layer.canvas.width, layer.canvas.height);
     this.panel!.dirty = true;
   }
 }

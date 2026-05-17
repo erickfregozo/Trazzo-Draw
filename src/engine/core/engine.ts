@@ -36,8 +36,9 @@ export class Engine {
   }
 
   public async init() {
-    this.loading = true;
     await this.configManager.init();
+    await this.toolSystem.init();
+
     let HotkeyConsumer: any[] = [
       this.panelManager,
       this.layerManager,

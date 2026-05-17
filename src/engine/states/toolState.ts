@@ -4,29 +4,29 @@ export class ToolState {
   selectedTool: string = "pen";
   size: number = 10;
   opacity: number = 100;
+  drawingTool: boolean = true;
 
   selectedColor: string = "#000000";
-
-  tools: Tool[] = [];
+  tools: Map<string, Tool> = new Map();
   previousTool: string = "";
-  isMoving: boolean = false;
 
-  get drawingTool(): boolean {
-    return false;
-  }
-
-  setTool(tool: string) {
-    this.selectedTool = tool;
-  }
-  setToolHotkey(tool: string) {
-    if (this.selectedTool !== tool) {
-      let toolSelected = this.tools.find(t => t.name == this.selectedTool);
-
-      if (toolSelected && toolSelected.drawingTool) {
-        this.previousTool = this.selectedTool;
-      }
+  setTool(toolName: string) {
+    let toolSelected = this.tools.get(toolName);
+    debugger;
+    if (toolSelected) {
+      this.size = toolSelected.size;
+      this.opacity = toolSelected.opacity;
+      this.drawingTool = toolSelected.drawingTool;
+      this.previousTool = "";
+      this.selectedTool = toolName;
     }
-    this.selectedTool = tool;
+  }
+  setToolHotkey(toolName: string, isReversible = false) {
+    let previousTool = this.selectedTool;
+    this.setTool(toolName);
+    if (isReversible) {
+      this.previousTool = previousTool;
+    }
   }
   restoreTool() {
     if (this.previousTool) {

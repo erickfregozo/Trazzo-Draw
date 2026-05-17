@@ -11,6 +11,8 @@ export class HotkeySystem implements LoopSystem {
   private actions: Record<string, Function> = {};
   private config: ConfigManager = new ConfigManager();
   private inputSize: number = 0;
+  private inputManager!: InputManager;
+  private toolState!: ToolState;
 
   async init(state: EngineState, systems: any[]) {
     //declare hoykeys
@@ -26,6 +28,8 @@ export class HotkeySystem implements LoopSystem {
     const inputManager: InputManager = systems.get("InputManager");
     const layerManager: LayerManager = systems.get("LayerManager");
     const toolState: ToolState = systems.get("ToolState");
+    this.inputManager = inputManager;
+    this.toolState = toolState;
     // #region View
     // zoom factor in percent (0.01 = 1%) 
     this.actions["ZoomIn"] = () => state.activePanel?.transform.scale(1.05);
@@ -34,38 +38,23 @@ export class HotkeySystem implements LoopSystem {
     // #endregion
 
     // #region Tools
+
     //#region Move tool
     const keysMove: string[] = [...(this.table.find(h => h.action == "MoveView")?.keys ?? [])];
-    inputManager.onKeyDownRegister((keys, e) => {
-      if (keysMove.every((k) => keys.has(k))) {
-        toolState.setToolHotkey("move");
-      }
-    });
-    inputManager.onKeyUpRegister((keys, e) => {
-      if (!keysMove.every((k) => keys.has(k))) {
-        toolState.restoreTool();
-      }
-    });
+    this.declareTools("moveView", keysMove, true);
     //#endregion
 
     //#region Zoom tool
     const keysZoom: string[] = [...(this.table.find(h => h.action == "ZoomView")?.keys ?? [])];
-    inputManager.onKeyDownRegister((keys, e) => {
-      if (keysZoom.length == keys.size && keysZoom.every((k) => keys.has(k))) {
-        toolState.setToolHotkey("zoom");
-      }
-    });
-    inputManager.onKeyUpRegister((keys, e) => {
-      if (keysZoom.length != keys.size || !keysZoom.every((k) => keys.has(k))) {
-        toolState.restoreTool();
-      }
-    });
+    this.declareTools("zoomView", keysZoom, true);
     //#endregion
+
     //#endregion
 
     //#region Layers
     this.actions["AddLayer"] = () => layerManager.addLayer();
     this.actions["RemoveLayer"] = () => layerManager.removeLayer(layerManager.selectedLayer);
+    this.actions["ClearLayer"] = () => layerManager.clearLayer();
     //#endregion
   }
 
@@ -104,5 +93,17 @@ export class HotkeySystem implements LoopSystem {
     }
 
     this.table = table;
+  }
+  private declareTools(tool: string, keysMove: string[], isReversible = true) {
+    this.inputManager.onKeyDownRegister((keys, e) => {
+      if (keysMove.length == keys.size && keysMove.every((k) => keys.has(k))) {
+        this.toolState.setToolHotkey(tool, isReversible);
+      }
+    });
+    this.inputManager.onKeyUpRegister((keys, e) => {
+      if (keysMove.length != keys.size || !keysMove.every((k) => keys.has(k))) {
+        this.toolState.restoreTool();
+      }
+    });
   }
 }

@@ -16,25 +16,21 @@ export class ToolSystem implements LoopSystem {
 
   constructor(toolState: ToolState) {
     this.toolState = toolState;
-    this.getTools();
   }
-
-  async getTools() {
+  async init() {
     let toolsJson: string = await this.config.getConfig("tools");
     let tools = this.parseJsonTools(toolsJson);
-    console.log(tools);
-    console.log([...tools]);
-    this.toolState.tools = [...tools];
+    this.toolState.tools = tools;
   }
 
   update(dt: number, state: EngineState, input: InputManager) {
     switch (this.toolState.selectedTool) {
-      case "move":
+      case "move": case "moveView":
         if (input.down && state.activePanel) {
           this.move(state, input);
         }
         break;
-      case "zoom":
+      case "zoom": case "zoomView":
         if (input.down && state.activePanel) {
           this.zoom(state, input);
         }
@@ -133,10 +129,10 @@ export class ToolSystem implements LoopSystem {
     this.lastY = y;
   }
 
-  private parseJsonTools(jsonString: string): Tool[] {
+  private parseJsonTools(jsonString: string): Map<string, Tool> {
     const clean = jsonString.replace(/,\s*([}\]])/g, '$1');
     const raw = JSON.parse(clean) as Record<string, Record<string, string>>;
-    return Object.entries(raw).map(([name, props]) => this.fromJSON(name, props));
+    return new Map(Object.entries(raw).map(([name, props]) => [name, this.fromJSON(name, props)]));
   }
   private fromJSON(name: string, raw: Record<string, string>): Tool {
     const tool = new Tool(name, raw.drawingTool == "true");
